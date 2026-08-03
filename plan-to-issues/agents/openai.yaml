@@ -1,0 +1,6 @@
+interface:
+  display_name: "Plan to Issues"
+  short_description: "Create independently mergeable issue PRs"
+  default_prompt: "Use $plan-to-issues to turn this approved plan into dense, standalone landing-unit issues whose PRs independently merge from the current target branch."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,6 @@
+interface:
+  display_name: "To Plan"
+  short_description: "Create compact architecture-first plans"
+  default_prompt: "Use $to-plan to turn this grilled design into a compact, architecture-first local implementation plan before creating issues."
+policy:
+  allow_implicit_invocation: false
