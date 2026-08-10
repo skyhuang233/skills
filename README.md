@@ -1,11 +1,11 @@
 # Skills
 
-Reusable Agent Skills for planning and turning approved plans into independently
-mergeable implementation issues.
+Reusable Agent Skills for co-designing living plans from overview to detail and
+turning approved plans into independently mergeable implementation issues.
 
 ## Install
 
-Use the interactive installer to choose one or both skills:
+Use the interactive installer to choose one or more skills:
 
 ```bash
 npx skills@latest add skyhuang233/skills
@@ -27,7 +27,15 @@ Omit `--global` to install into the current project's agent-skills directory.
 
 ## Included skills
 
-- `to-plan` — create a compact, architecture-first local implementation plan
-  before creating issues.
+- `grill-with-docs` — discuss a design from overview to detail while keeping its
+  living plan, glossary, and necessary ADRs current.
+- `to-plan` — maintain and independently review an overview-to-detail living
+  design plan.
 - `plan-to-issues` — turn an approved plan into dense landing-unit issues whose
   PRs independently merge from the current target branch.
+
+Recommended sequence:
+
+```text
+grill-with-docs → to-plan → user approval → plan-to-issues
+```

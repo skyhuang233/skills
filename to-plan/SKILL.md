@@ -1,106 +1,95 @@
 ---
 name: to-plan
-description: Turn settled design work into a compact, architecture-first local implementation plan before issue creation.
-disable-model-invocation: true
+description: 维护并打磨从概要设计逐步展开到详细设计的活计划；用于把已确认设计写成 plan、在 grill-with-docs 完成一个设计块后同步文档，或精炼已有 plan。
 ---
 
-# To Plan
+# 维护活计划
 
-Create an **architecture-first plan** from a settled `/grill-with-docs`
-discussion. It is the reviewable bridge between design and
-`/plan-to-issues`: concrete enough to implement without rediscovery, compact
-enough for a human to understand the system in one pass.
+计划是一份从概要设计逐步展开到详细设计的活文档。它可以由 `/grill-with-docs` 在每个设计
+块确认后调用，也可以独立把既有讨论整理成计划，或对已有计划做最终打磨。
 
-Plan depth comes from named contracts, ownership, paths, lifecycle edges, and
-proof—not from the number of files. Keep the whole plan in the fewest documents
-that preserve a clear architecture and a coherent review.
+采用双轨工作：写作 agent 调查、共写和修订；完整草稿形成后，由未参与写作的 reviewer
+agent 独立检查可读性、整体连贯性与事实忠实度。审核材料不进入计划。
 
-## 1. Establish the evidence and size
+## 1. 建立一次性设计基线
 
-Read the settled conversation, relevant ADRs/glossary, affected source and
-tests, repository conventions, and authoritative external documentation. Check
-the current target branch rather than trusting old notes.
+完整阅读[文档质量标准](references/document-quality.md)。读取现有计划、已确认讨论、有效 ADR、
+术语表、当前目标分支的相关源码与配置，以及任务依赖的权威外部契约。追踪 ADR 替代关系并
+核对真实调用方。
 
-For each material seam, record current evidence, the selected rule, and the
-required proof. Keep unresolved access, credentials, DNS, purchases, approvals,
-and live certification as named human gates.
+在工作上下文维护事实账本：
 
-Then choose the smallest shape from
-[plan shapes](references/plan-shapes.md):
+| 设计块 | 当前事实 | 已确认目标 | 未决问题 | 证据位置 | 计划位置 |
+|---|---|---|---|---|---|
 
-- **One document** for one repository and one coherent behavior, where the
-  architecture, implementation, and validation remain easy to review together.
-- **Two documents** for the usual single-repository integration: one concise
-  architecture/decision map and one implementation/verification plan. This is
-  the default when code detail would otherwise bury the system model.
-- **Four or five documents** only when at least two strong split signals are
-  present: multiple repositories or independently deployed systems; a staged
-  compatibility/data/protocol migration; or an independently owned
-  control-plane, runtime, or operator workflow with its own design review.
+首次调查建立系统边界和代码全貌；之后每个设计块只回到相关接缝核对。旧计划是写作输入，不是
+目标设计的授权来源。
 
-A document earns its existence only when it carries an independent architecture
-or review question. Keep adjacent material as sections of the same document;
-never create a document merely because it names a technical surface.
+定位已有设计文档，或在第一个已确认设计块出现时创建 `.scratch/<feature>/` 下的 plan。让同一
+读者任务保持在一份文档中；只有读者、owner 或生命周期确实独立时才形成新的文档边界。
+新文档只使用 `name` 与 `status: draft` 的最小 frontmatter。
 
-**Complete when:** every requested behavior has a current evidence source, a
-selected rule, or a named human gate, and the chosen file count is justified by
-the shape rules.
+**完成条件：**能够说明当前系统边界、目标能力、主要流程，以及哪些内容已确认或仍需用户
+裁决；计划中的每项既有事实都有当前证据。
 
-## 2. Draw the system before detailing code
+## 2. 先完成概要设计
 
-Put a whole-task map immediately after the outcome and non-goals—before long
-tables or code-level detail. For work that crosses a component, runtime, or
-external-service boundary, use a Mermaid component or sequence diagram that
-shows the changed boundary, reused boundary, and labeled flows. For a contained
-code change, use a small before/after module or data-flow map instead.
+概要设计先回答四个问题：
 
-Make the map answer: what initiates the behavior, which layer owns each
-decision, what crosses a trust or API boundary, and where observable success
-or cleanup occurs. Add a focused sequence diagram only when lifecycle order is
-itself a material decision.
+1. 系统提供哪些能力，范围到哪里；
+2. 从触发到完成有哪些主要端到端流程，组件分别做什么；
+3. 会新增或改变哪些持久化实体，它们的身份、关系和核心状态是什么；
+4. 每条流程在哪一步创建或更新哪些数据，最终状态是什么。
 
-**Complete when:** a reviewer can state the target architecture and the
-change's insertion point from the first screen of the primary plan document.
+计划覆盖新服务或跨边界有状态流程时，起草概要前完整阅读
+[Agent Note 服务设计范例](references/examples/AgentNote_服务设计.md)。只学习它从能力与边界、
+数据模型和端到端时序逐层进入并发、恢复与接口的阅读顺序，不复用其中的项目事实。
 
-## 3. Write an executable plan
+用总体图建立边界与主流程，用 ER 图或数据表概览实体，用端到端时序标注关键
+`INSERT`/`UPDATE`、状态变化和终止结果。概要只使用领域术语；代码路径、局部接口和异常分支
+留到相应详细设计块。
 
-Follow the selected shape closely enough to keep plans recognizable; tailor
-only the sections that carry real decisions. The exact templates and split
-examples are in [plan shapes](references/plan-shapes.md).
+独立调用本 skill 时，先把这版概要交给用户确认，再展开细节。由 `/grill-with-docs` 调用时，
+每个已确认的概要设计块立即写回同一份活计划。
 
-For every implementation change, state the verified path and symbol, current
-and target responsibility, input/output or resource contract, error/retry and
-compatibility rule, and proof. Use tables for identity/resource/configuration
-mappings. Include small interface, payload, YAML, or command examples only
-when they freeze a cross-boundary contract.
+**完成条件：**首次阅读者能沿每条主流程从触发走到结果，并准确指出参与组件、持久化数据和
+状态变化；用户已经确认这张整体地图。
 
-Cover first use, repeated execution, upgrade or migration, partial failure,
-cleanup, rollback/repair, and stale/concurrent state whenever they matter.
-State credentials and allow-lists at the boundary that owns them. Use concrete
-non-secret examples; replace sensitive values with placeholders.
+## 3. 逐块展开详细设计
 
-The plan is local provenance, not an Issue draft. Do not pre-split work into
-PRs, Issue numbers, `Blocked by` relations, execution order, or agent status.
+完整执行[设计块与契约深度](references/implementation-focus.md)。每次只细化一条主流程、一个
+核心数据模型或一个共享执行边界。该参考中的“确认来源门槛”是所有精确目标契约的唯一规则。
 
-**Complete when:** each planned behavior has an exact owner, change location,
-edge rule, and observable acceptance proof.
+一个设计块确认后立即更新计划：把 schema 约束放回对应实体，把状态转换放回对应流程，把
+接口或配置放回拥有该边界的组件。随后重读标题、总图、数据模型和时序，统一名称、方向、
+字段与状态。事实账本记录本块已经核对的源码接缝，最终阶段只重新打开发生变化的接缝。
 
-## 4. Audit and approve
+**完成条件：**每个详细段落都能指向概要中的一条流程、一个实体或一个边界；每个精确目标
+契约都有确认来源，实施者无需替计划重新作关键设计。
 
-Read the whole plan set as a reviewer. Replace vague phrases such as “add
-support”, “update config”, and “add tests” with the responsible boundary,
-path/symbol or external contract, lifecycle rule, and evidence.
+## 4. 映射到代码与配置
 
-Verify that names agree across diagrams, mappings, code plans, configuration,
-and tests; that every external interaction names its caller, identity, effect,
-errors, idempotency, and credential boundary; and that every validation says
-whether it is automated, manual, or a human-gated live check.
+概要与详细设计稳定后，再把变化映射到模块、稳定路径或公开符号。按责任由大到小组织，优先
+展示数据、接口、状态与映射；常规 wiring 和局部控制流由实现者从这些契约推出。
 
-Keep the primary document `Status: draft` until the user approves the complete
-plan. Then mark it `approved` and hand the one document or complete plan set
-to `/plan-to-issues`, which must copy the decisions into independently
-mergeable Issues.
+计划只说明系统如何组成以及代码与配置如何改变。ADR 理由、调查来源、测试方案、验证矩阵、
+人工门槛、上线判定和 Issue 拆分保留在相应工作材料中。
 
-**Complete when:** the approved plan is architecture-first, has no unowned
-material open decision, and lets a senior engineer implement its scope without
-a new discovery pass.
+**完成条件：**每个发生变化的组件和关系都有实现 owner；代码定位沿概要主线展开，没有孤立
+的文件清单或实现细节。
+
+## 5. 独立审核并整体打磨
+
+完整草稿保持 `status: draft`。调用一个未参与写作、且不继承写作者推理过程的 reviewer
+agent，只提供完整计划路径、当前目标分支或提交、ADR/术语表、相关源码与配置、必要外部契约，
+以及能够证明用户确认结果的原始讨论。不提供写作者总结或预期 findings。
+
+要求 reviewer 完整执行[独立审核轨](references/review-track.md)。写作 agent 关闭 findings 后，
+从开头按“能力与边界 → 主流程 → 数据模型 → 带数据变化的时序 → 详细设计 → 实现定位”重读全文，
+让同一 reviewer 复核修改区域。
+
+未闭合事实在计划外列给用户，计划保持 `status: draft`。用户批准后才标记为 `approved` 并交给
+`/plan-to-issues`。
+
+**完成条件：**首次阅读者可以从概要自然进入细节；图、表、时序和实现定位讲述同一个系统；
+所有 reviewer 的 `blocking` 与 `important` findings 已关闭，并取得用户批准。
