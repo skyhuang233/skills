@@ -29,6 +29,10 @@ Omit `--global` to install into the current project's agent-skills directory.
 
 - `grill-with-docs` — discuss a design from overview to detail while keeping its
   living plan, glossary, and necessary ADRs current.
+- `grilling` — interview one decision at a time, recommending the minimal
+  sufficient mechanism for each.
+- `domain-modeling` — maintain the ubiquitous language in `CONTEXT.md` and
+  record decisions that meet the ADR bar.
 - `to-plan` — maintain and independently review an overview-to-detail living
   design plan.
 - `plan-to-issues` — turn an approved plan into dense landing-unit issues whose
@@ -37,5 +41,5 @@ Omit `--global` to install into the current project's agent-skills directory.
 Recommended sequence:
 
 ```text
-grill-with-docs → to-plan → user approval → plan-to-issues
+grilling + domain-modeling → grill-with-docs → to-plan → user approval → plan-to-issues
 ```
