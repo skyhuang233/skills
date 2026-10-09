@@ -1,189 +1,134 @@
 ---
 name: plan-to-issues
-description: Create landing-unit issues from an approved local plan. Use when splitting a plan into agent implementation tasks, drafting issues, or repairing issue sets whose PRs require an unmerged sibling, merge order, or integration branch to land.
+description: 从一份已批准的本地 plan 生成 landing unit issue。把 plan 拆成 agent 实施任务、起草 issue，或修复那些 PR 依赖未合并的兄弟 issue、依赖合并顺序、依赖集成分支才能落地的 issue 集合时使用。
 ---
 
-# Plan to Issues
+# Plan 到 Issue
 
-Turn an approved plan or plan suite into dense, self-contained **landing units**. A landing
-unit is one issue whose Agent can start from the current target branch, produce
-one green PR, and merge it without any planned sibling already existing.
+把一份已批准的 plan 或 plan 集转成密集、自含的 **landing unit**。landing unit 是一个 issue：它的 agent 能从当前目标分支直接开工，产出一个 green PR，并在任何计划中的兄弟 issue 尚不存在时把它合并。
 
-The issue is both an execution brief and its compact technical design record.
-It contains the selected design, relevant architecture, invariants, failure
-rules and proof. A plan is provenance, never required execution context.
+这个 issue 既是执行简报，也是它自己的紧凑技术设计记录。它包含选定设计、相关架构、不变量、失败规则和证明。plan 只是来源，从不是执行必需的上下文。
 
-## Landing-unit rule
+## landing unit 规则
 
-Use `main` as the target branch unless the user names another already-existing
-target branch. A candidate is a landing unit only when all answers are yes:
+除非用户指定另一个已经存在的目标分支，否则用 `main` 作为目标分支。一个候选只有全部回答为「是」时才是 landing unit：
 
-1. Can an Agent check out the target branch and implement it using only tracked
-   repository code and this issue?
-2. Does its PR compile, test and make a coherent, reviewable change before any
-   other planned PR merges?
-3. Does merging it add a complete behavior or a complete, safe capability—not
-   merely a seam that a planned sibling must finish?
-4. Can its Agent own every new interface, configuration field, dependency and
-   assembly change it needs without another candidate creating the same thing?
+1. agent 能否检出目标分支，只用已追踪的仓库代码和这个 issue 就实现它？
+2. 在其他任何计划中的 PR 合并之前，它的 PR 能否编过、测过，并形成一个连贯、可审阅的改动？
+3. 合并它是否带来一个完整的行为或一项完整、安全的能力，而不是一个必须由计划中的兄弟 issue 补完的 seam？
+4. 它的 agent 能否在不与另一个候选撞车的前提下，独占它需要的每个新接口、配置字段、依赖和装配改动？
 
-When an answer is no, take the candidate's **closure**: merge into it every
-planned change that makes the answer yes. Repeat until every remaining
-candidate passes. A shared base branch, stubs, a merge queue or an intended
-merge order does not shrink that closure.
+有一个回答是「否」，就取这个候选的 **closure**：把所有能让回答变成「是」的计划内改动并进它。重复直到剩余候选全部通过。共享基础分支、stub、合并队列或预定的合并顺序都不会让这个 closure 变小。
 
-Two landing units are parallel-ready only when both pass individually and their
-PRs have isolated ownership: each uses interfaces already on the target branch,
-owns distinct new symbols/files, and has no contested configuration, registry,
-dependency-lock or integration-test edit. Merge candidates when that ownership
-cannot be made explicit.
+两个 landing unit 只有在各自单独通过、且它们的 PR 归属隔离时才算可并行：各自只用目标分支上已有的接口，独占新的符号和文件，且不与他人争抢同一处配置、注册表、依赖锁或集成测试改动。这种归属无法明确表达时，就把候选合并。
 
-Keep live credentials, account setup, approvals and production execution as
-human gates. An issue may commit an opt-in harness, but its real run is a
-plan-level operation, not a code dependency.
+把活跃的凭据、账户开通、审批和生产执行留作人工门槛。issue 可以提交一套需要显式开启的脚手架，但它的真实运行是 plan 层面的操作，不是代码依赖。
 
-## Process
+## 流程
 
-### 1. Read the evidence
+### 1. 读证据
 
-Read the complete plan set (every document when the plan uses more than one file), ADRs, supplied parent issue/comments, relevant code and
-tests, plus repository issue conventions. Classify evidence as authoritative,
-supporting or stale. Resolve every material conflict in protocol, lifecycle,
-ownership or security behavior from primary evidence before drafting.
+读完整的 plan 集（plan 由多份文件构成时读全部文件）、ADR、提供的父 issue 与评论、相关代码和测试，以及仓库的 issue 约定。把证据分为权威、佐证、过期三类。起草之前，先从一手证据解决协议、生命周期、归属或安全行为上的每一处实质性冲突。
 
-Treat local plans, scratch files and untracked notes as drafting input only.
-Copy every execution-relevant decision into its issue.
+把本地 plan、草稿文件和未跟踪笔记只当作起草输入。把每个与执行相关的决策抄进它的 issue。
 
-Maintain a private coverage ledger:
+维护一份不对外输出的覆盖账本：
 
-| Plan requirement | Landing unit | Proof |
+| plan 要求 | landing unit | 证明 |
 | --- | --- | --- |
-| `<requirement>` | `<issue>` | `<test or observation>` |
+| `<要求>` | `<issue>` | `<测试或观测>` |
 
-**Complete when:** every requirement has one landing-unit owner or a declared
-human gate, and all material decisions are resolved.
+**完成条件：**每条要求都有一个 landing unit owner 或被声明为人工门槛，且所有实质性决策都已解决。
 
-### 2. Map change closure
+### 2. 映射改动 closure
 
-Inspect current seams, tests, configuration, registries, dependencies and
-validation commands. For each planned change, record what current tracked code
-it consumes and what new artifact it introduces.
+考察现有 seam、测试、配置、注册表、依赖和验证命令。对每项计划改动，记录它消费了哪些现有已追踪代码、引入了什么新产物。
 
-For every tentative issue, recursively include its planned prerequisites. Also
-include any planned work that shares a new type, config shape, constructor,
-registry, dependency lock, lifecycle test or integration point. Apply the
-landing-unit rule before writing prose.
+对每个暂定 issue，递归并入其计划内前置项。还要并入任何共享新类型、配置形态、构造函数、注册表、依赖锁、生命周期测试或集成点的计划内工作。写正文之前先套用 landing unit 规则。
 
-**Complete when:** each remaining unit can start from the target branch and
-leave it green after one PR; no unit relies on an unmerged plan artifact.
+**完成条件：**每个剩余单元都能从目标分支开工，并在一个 PR 后让分支保持 green；没有单元依赖未合并的 plan 产物。
 
-### 3. Draft the landing unit
+### 3. 起草 landing unit
 
-Write a closed-book issue: a fresh Agent receives only the issue, target
-repository and repository-native instructions. Give it enough design context to
-implement without source-plan archaeology, while leaving only local coding
-choices open.
+写一个闭卷 issue：新接手的 agent 只拿到这个 issue、目标仓库和仓库自身的说明。给它足够的设计上下文，让它无需做 plan 考古就能实现，同时只留下本地的编码选择开放。
 
-Use a diagram only when it proves a local ownership, data flow, state change or
-failure branch more clearly than prose.
+只在图能比文字更清楚地证明某处归属、数据流、状态变化或失败分支时才用图。
 
 ```markdown
-# <Outcome-oriented title>
+# <结果导向的标题>
 
 Status: planned
 
 ## Outcome
 
-<Complete behavior or capability that this one PR makes mergeable.>
+<这一个 PR 能合并的完整行为或能力。>
 
 ## Existing boundary
 
-<Current tracked behavior, relevant seams and why this unit owns the complete
-change.>
+<当前已追踪的行为、相关 seam，以及为什么这个单元拥有完整的改动。>
 
 ## Chosen approach and invariants
 
-<Selected design, rationale, stable identity/ownership/lifecycle/security
-rules, and a diagram or worked example when it makes a rule auditable.>
+<选定设计、理由，稳定的身份/归属/生命周期/安全规则，以及在能让规则可审计时配一张图或一个演算示例。>
 
 ## Scope
 
-- <Every code, config, dependency and assembly change required for the outcome>
-- <Explicitly retained behavior>
+- <达成结果所需的每一项代码、配置、依赖和装配改动>
+- <明确保留的行为>
 
 ## Implementation plan
 
-1. `<verified path or symbol>` — <exact change and ordered behavior>
-2. `<verified path or symbol>` — <integration and failure behavior>
-3. `<test name>` — <fixture, action and expected observation>
+1. `<已核实的路径或符号>` —— <确切改动与有序行为>
+2. `<已核实的路径或符号>` —— <集成与失败行为>
+3. `<测试名>` —— <夹具、动作与预期观测>
 
 ## Acceptance criteria
 
-- [ ] <Observable outcome>
-- [ ] <Failure, retry, compatibility or security rule>
-- [ ] <Target branch remains green without another planned PR>
+- [ ] <可观测的结果>
+- [ ] <失败、重试、兼容或安全规则>
+- [ ] <目标分支在没有其他计划内 PR 时保持 green>
 
 ## Validation
 
-- `<repository-native command>`
-- <Scenario and expected evidence>
+- `<仓库自带的命令>`
+- <场景与预期证据>
 
 ## Human gates
 
-- <Manual resource, approval or live run and its evidence>, or `None`.
+- <人工资源、审批或真实运行及其证据>，或 `None`。
 
 ## Source context
 
-- <Optional public primary URL or tracked repository path; never required to
-  execute the issue>
+- <可选：公开的一手 URL 或已追踪的仓库路径；执行时从不需要>
 
 ## Comments
 
-On completion append commit/PR, validation results, sanitized diagnostics and
-any correction to the stated contract.
+完成时追加 commit/PR、验证结果、脱敏后的诊断信息，以及对所述合同的任何更正。
 ```
 
-When current evidence differs from the plan, state the prior rule, corrected
-rule, proof and impact in `## Chosen approach and invariants`. Keep every
-execution-relevant decision inside the issue.
+当前证据与 plan 不一致时，在 `## Chosen approach and invariants` 里写明原先的规则、更正后的规则、证明和影响。把每个与执行相关的决策都留在 issue 内。
 
-**Complete when:** the issue passes the landing-unit rule and contains all
-behavior, rationale and proof needed for its PR.
+**完成条件：**issue 通过 landing unit 规则，并包含它这个 PR 所需的全部行为、理由和证明。
 
-### 4. Check publication accessibility
+### 4. 检查发布可达性
 
-Inspect every path and link before publication. Keep public primary URLs and
-repository paths verified tracked at the target revision. Use
-`git ls-files --error-unmatch <path>` for the current checkout and
-`git ls-tree -r <target-ref> -- <path>` when a target revision is known.
+发布前逐条检查每个路径和链接。公开的一手 URL 和仓库路径要在目标版本上核实为已追踪。当前检出用 `git ls-files --error-unmatch <path>` 核对；已知目标版本时用 `git ls-tree -r <target-ref> -- <path>` 核对。
 
-State files created by the issue as create targets in Scope or the
-Implementation plan; they are not source context. Copy decisions out of local
-paths rather than citing them.
+issue 要创建的文件在 Scope 或 Implementation plan 中声明为创建目标，它们不属于来源上下文。把决策从本地路径中抄出来，而不是引用这些路径。
 
-**Complete when:** a remote reviewer can follow every citation, and closing all
-citations still leaves the issue executable.
+**完成条件：**远端 reviewer 能打开每一处引用，且删掉所有引用后 issue 仍可执行。
 
-### 5. Audit and publish
+### 5. 审核并发布
 
-Audit every draft:
+审核每一份草稿：
 
-- **Landing:** it passes all four landing-unit questions from the current target
-  branch.
-- **Parallel readiness:** any proposed companion has isolated ownership and
-  independent green validation.
-- **Closed-book:** no plan, scratch file, sibling Issue or hidden branch is
-  required reading.
-- **Technical density:** architecture, trade-offs, invariants and proof are
-  legible; diagrams earn their space.
-- **Coverage:** the ledger assigns every plan requirement once.
-- **Accessibility:** no local-only source is cited or required.
+- **可落地：**它从当前目标分支起满足 landing unit 的全部四个问题。
+- **可并行：**任何拟议的伴随 issue 都归属隔离且能独立验证为 green。
+- **闭卷：**不要求阅读任何 plan、草稿文件、兄弟 issue 或隐藏分支。
+- **技术密度：**架构、取舍、不变量和证明都读得清楚；图的存在有理由。
+- **覆盖：**账本为每条 plan 要求分配了唯一 owner。
+- **可达性：**没有引用或依赖只存在于本地的来源。
 
-Present each issue with its outcome, why it is a landing unit and its human
-gates. If closure produces one unit, present one issue rather than artificial
-parallelism. Publish one native issue per approved unit, with `Status: planned`
-for manual dispatch. Native issue bodies carry their own execution brief; they
-contain no cross-issue state, tracker relation or ordering section.
+逐个 issue 给出它的结果、为什么它是 landing unit，以及它的人工门槛。closure 后只剩一个单元时，只给出一个 issue，不要为了并行而造出假并行。每个已批准单元发布一个原生 issue，状态为 `Status: planned`，等待人工派发。原生 issue 正文自带它的执行简报；里面不含跨 issue 的状态、跟踪器关系或排序说明。
 
-**Complete when:** every published issue is independently mergeable from the
-target branch, all citations render, and the set is reported as planned.
+**完成条件：**每个已发布的 issue 都能从目标分支独立合并，所有引用都能渲染，且这批 issue 以 planned 状态报告。

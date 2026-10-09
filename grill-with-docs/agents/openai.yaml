@@ -1,6 +1,6 @@
 interface:
   display_name: "Grill with Docs"
-  short_description: "Co-design from overview to detail in a living plan"
-  default_prompt: "Use $grill-with-docs to design from overview to detail while keeping the living plan in sync."
+  short_description: "从概要到详细共写设计并维护活计划"
+  default_prompt: "使用 $grill-with-docs 从概要到详细地设计，同时保持活计划同步。"
 policy:
   allow_implicit_invocation: false

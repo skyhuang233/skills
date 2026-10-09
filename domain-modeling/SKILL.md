@@ -1,15 +1,15 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, record an architectural decision, or when another skill needs to maintain the domain model.
+description: 构建并打磨项目的领域模型。用于用户想固定领域术语或 ubiquitous language、记录一项架构决策，或其他 skill 需要维护领域模型时。
 ---
 
-# Domain Modeling
+# 领域建模
 
-Actively build and sharpen the project's domain model as you design. This is the *active* discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
+在设计过程中主动构建并打磨项目的领域模型。这是一项*主动*的功课——质疑用词、构造边界场景，并在术语和决策成形的当下就写下来。（仅仅*阅读* `CONTEXT.md` 取词不算这项功课，那是任何 skill 都该有的一行习惯。这项功课用在你要改变模型的时候，而不只是消费它。）
 
-## File structure
+## 文件结构
 
-Most repos have a single context:
+多数仓库只有一个 context：
 
 ```
 /
@@ -21,65 +21,60 @@ Most repos have a single context:
 └── src/
 ```
 
-If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
+如果根目录存在 `CONTEXT-MAP.md`，说明仓库有多个 context。这份 map 指出每个 context 的位置：
 
 ```
 /
 ├── CONTEXT-MAP.md
 ├── docs/
-│   └── adr/                          ← system-wide decisions
+│   └── adr/                          ← 系统级决策
 ├── src/
 │   ├── ordering/
 │   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← context-specific decisions
+│   │   └── docs/adr/                 ← 该 context 自己的决策
 │   └── billing/
 │       ├── CONTEXT.md
 │       └── docs/adr/
 ```
 
-Create files lazily — only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+文件按需创建——只在有内容可写时才建。没有 `CONTEXT.md` 时，在第一个术语确定时创建。没有 `docs/adr/` 时，在第一份 ADR 需要时创建。
 
-## During the session
+## 会话过程中
 
-### Challenge against the glossary
+### 用术语表反查用词
 
-When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
+当用户使用的术语与 `CONTEXT.md` 中已有的语言冲突时，立刻指出来。「你的术语表把 'cancellation' 定义为 X，但你似乎指的是 Y——到底是哪一个？」
 
-### Sharpen fuzzy language
+### 磨利模糊用词
 
-When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
+当用户使用含糊或一词多义的术语时，提出一个精确的规范用词。「你说的是 'account'——你指的是 Customer 还是 User？这是两个不同的东西。」
 
-### Discuss concrete scenarios
+### 讨论具体场景
 
-When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
+讨论领域关系时，用具体场景去压力测试它们。构造那些能戳到边界情况的场景，迫使用户说清概念之间的界线。
 
-Edge-case scenarios exist to sharpen *boundaries between concepts*, not to justify defensive machinery. When a scenario is genuinely unreachable inside the system boundary, the answer is that it does not need handling, and it does not become an entity, a state, or a reconciliation step. Do not promote per-run data, temporary state, or diagnostic output to a domain entity merely because a scenario mentioned it.
+边界场景是为了磨利*概念之间的界线*，不是用来给防御性机制找理由。当一个场景在本系统边界内确实不可达时，答案就是它不需要处理，它也不会变成一个实体、一个状态或一次对账步骤。不要仅仅因为某个场景提到过 per-run 数据、临时状态或诊断输出，就把它们提升为领域实体。
 
-### Keep implementation mechanisms out of the model
+### 把实现机制挡在模型之外
 
-A trust boundary, an authorization rule, a retry policy, or a compensation step is an implementation
-mechanism, not a domain concept — do not enshrine one in `CONTEXT.md` or propose one as part of
-sharpening the model. If the conversation needs one, it is a design decision for the plan, and it
-must first pass the necessity gate: name the concrete threat, confirm it is reachable inside this
-boundary, then take the lowest sufficient rung (nothing → precondition check that fails fast →
-unrepresentable state → retry/compensation).
+信任边界、鉴权规则、重试策略或补偿步骤是实现机制，不是领域概念——不要把它们写进 `CONTEXT.md`，也不要在磨利模型时把它们当作提案。如果对话确实需要一个，那是 plan 里的设计决策，且必须先过必要性门槛：说清具体威胁，确认它在本边界内真实可达，再取最低的足够一级（不处理 → 前置校验 + fail-fast → 让非法状态不可表示 → 重试/补偿）。
 
-### Cross-reference with code
+### 与代码交叉核对
 
-When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
+用户说明某处如何运作时，去核对代码是否一致。发现矛盾就指出来：「你的代码会取消整个 Order，但你刚才说可以部分取消——哪个是对的？」
 
-### Update CONTEXT.md inline
+### 就地更新 CONTEXT.md
 
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
+一个术语确定后就地更新 `CONTEXT.md`。不要攒着批量写——在发生的当下就记录。格式见 [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)。
 
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+`CONTEXT.md` 应当完全不含实现细节。不要把 `CONTEXT.md` 当成 spec、草稿纸或实现决策的存放处。它是术语表，仅此而已。
 
-### Offer ADRs sparingly
+### 谨慎地提议 ADR
 
-Only offer to create an ADR when all three are true:
+只有以下三条全部成立时才提议创建 ADR：
 
-1. **Hard to reverse** — the cost of changing your mind later is meaningful
-2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
-3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
+1. **难以逆转**——以后改主意的代价是实打实的
+2. **缺少上下文会让人意外**——未来的读者会问「他们当时为什么这么做？」
+3. **是真实取舍的结果**——确实存在其他选择，而你出于具体理由选了这一个
 
-If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+任何一条不成立就跳过 ADR。格式见 [ADR-FORMAT.md](./ADR-FORMAT.md)。

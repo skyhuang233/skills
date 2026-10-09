@@ -1,23 +1,24 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
+description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. 就一份 plan、一个决策或一个想法持续追问用户，用于用户想压力测试自己的想法，或说出任何 'grill' 触发词时。
 ---
 
-Interview me relentlessly about every aspect of this until we reach a shared understanding. Walk down each branch of the decision tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+就这件事的每个方面持续追问，直到我们达成 shared understanding。沿着决策树的每条分支往下走，一次解决一个决策及其依赖关系。每个问题都给出你推荐的答案。
 
-Your recommended answer must name the **minimal sufficient mechanism**, not the most complete one. Before proposing any defensive mechanism — auth or a trust boundary, a new persisted entity, retry/compensation/rollback, aggregation, or a provider/wire adapter — state the concrete threat it defends against and whether that threat is actually reachable inside this design's boundary. If it is not reachable, recommend not handling it. When the threat is real, prefer the lowest rung: do nothing → a precondition check that fails fast → make the illegal state unrepresentable or reuse an existing seam → retry/compensation/rollback. Fail-fast is a complete answer, not an absence of defense. Never ask "should we handle X too?" as an open question; ask "is X reachable here?" and recommend the rung.
+推荐的答案必须说清**最小充分机制**，而不是最完备的那个。提出任何防御性机制之前——鉴权或信任边界、新增持久化实体、重试/补偿/回滚、聚合，或 provider/wire adapter——先说明它防的具体威胁是什么，以及该威胁在本设计边界内是否真实可达。不可达就推荐不处理。威胁真实存在时，取最低一级：不处理 → 前置校验 + fail-fast → 让非法状态不可表示或复用现有 seam → 重试/补偿/回滚。**fail-fast 是完整答案，不是「没做防御」。** 不要把「要不要也处理 X」当作开放问题来问；要问「X 在这里可达吗」，并推荐所处的那一级。
 
-Ask the questions one at a time, waiting for feedback on each question before continuing. Asking multiple questions at once is bewildering.
+一次只问一个问题，等到对上一个问题有回复再继续。一次抛出多个问题会让人无所适从。
 
-If a *fact* can be found by exploring the environment (filesystem, tools, etc.), look it up rather than asking me. The *decisions*, though, are mine — put each one to me and wait for my answer.
+如果一个*事实*能通过探查环境（文件系统、工具等）得到，就去查，不要问我。*决策*归我，逐个摆到我面前等我的答复。
 
-As early as possible — from the initial prompt or the first few answers — extract the user's *endgame*: their ultimate desired outcome that constrains downstream decisions. When the endgame is clear enough to narrow the remaining decision space, pause and state it explicitly ("I understand your endgame is …"). Wait for confirmation before using it.
+尽早就提取用户的 *endgame*——那个约束后续所有决策的最终目标。可以从最初的 prompt 或最初几个回答中提取。endgame 清晰到足以收缩剩余决策空间时，停下来把它明确说出来（「我理解你的 endgame 是……」）。等我确认后再使用它。
 
-Once the endgame is confirmed:
-- **Batch-infer**: list decisions whose answers are implied by the endgame, with your reasoning. Present them together for the user to confirm or correct individually — do not ask them one by one.
-- **Align**: for decisions that remain genuinely open, anchor your recommended answer to the endgame ("given your endgame X, I recommend Y because …").
-- **Prune**: skip entire branches that the endgame makes irrelevant — no need to mention them.
+endgame 确认之后：
 
-If a later answer contradicts the confirmed endgame, surface the contradiction and re-confirm before continuing.
+- **批量推断**：列出那些已被 endgame 蕴含的决策，附上你的推理。把它们放在一起让我逐条确认或纠正，不要一个一个问。
+- **对齐**：对仍然真正开放的决策，让你的推荐答案锚定在 endgame 上（「鉴于你的 endgame 是 X，我推荐 Y，因为……」）。
+- **剪枝**：跳过被 endgame 判定为无关的整条分支，不必提及。
 
-Do not act on it until I confirm we have reached a shared understanding.
+如果后续某个回答与已确认的 endgame 矛盾，先指出矛盾并重新确认，再继续。
+
+在我确认我们已达成 shared understanding 之前，不要动手实施。

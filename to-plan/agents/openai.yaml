@@ -1,4 +1,4 @@
 interface:
   display_name: "To Plan"
-  short_description: "Maintain an overview-to-detail living design plan"
-  default_prompt: "Use $to-plan to maintain a living design plan from overview through confirmed details."
+  short_description: "维护从概要展开到详细的活计划"
+  default_prompt: "使用 $to-plan 维护一份从概要到已确认详细设计的活计划。"
