@@ -1,0 +1,6 @@
+interface:
+  display_name: "TDD"
+  short_description: "红绿循环的参考：好测试、seam、反模式与循环规则"
+  default_prompt: "使用 $tdd 以测试先行的方式实现这项工作。"
+policy:
+  allow_implicit_invocation: false

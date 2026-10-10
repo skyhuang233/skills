@@ -1,0 +1,3 @@
+interface:
+  display_name: "Software Engineering Principle"
+  short_description: "设计、实施与审查时可引用的 21 条软件工程原则"

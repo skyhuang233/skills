@@ -1,0 +1,6 @@
+interface:
+  display_name: "Implement"
+  short_description: "依据计划或口述描述实现一项工作，内部走 tdd 与 code-review"
+  default_prompt: "使用 $implement 实现这项已设计好的工作。"
+policy:
+  allow_implicit_invocation: false

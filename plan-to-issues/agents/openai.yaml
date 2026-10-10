@@ -1,6 +1,0 @@
-interface:
-  display_name: "Plan to Issues"
-  short_description: "生成可独立合并的 issue PR"
-  default_prompt: "使用 $plan-to-issues 把这份已批准的 plan 拆成密集、自含的 landing unit issue，让它们的 PR 各自从当前目标分支独立合并。"
-policy:
-  allow_implicit_invocation: false
