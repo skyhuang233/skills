@@ -75,3 +75,38 @@ test("calculateTotal sums line items", () => {
   expect(calculateTotal([{ price: 10 }, { price: 5 }])).toBe(15);
 });
 ```
+
+## 入口可以换，契约不变
+
+同一个契约，先用最外层入口测；内部结构调整后，换到新入口，断言一字不改。
+
+```typescript
+// 契约：保存后恢复，读回的状态与保存前一致。
+// 入口 v1：checkpoint_snapshot() / restore()，当时是最外层。
+test("restore returns the state that was saved", async () => {
+  const session = await openSession();
+  session.learn(events);
+  const before = session.snapshotId();
+
+  const checkpoint = await session.checkpoint_snapshot();
+  const restored = await restore(checkpoint);
+
+  expect(restored.snapshotId()).toBe(before);
+});
+
+// 内部结构变了：snapshot 系列合并成一个入口。断言没有变。
+test("restore returns the state that was saved", async () => {
+  const session = await openSession();
+  session.learn(events);
+  const before = session.stateId();
+
+  const checkpoint = await session.save();
+  const restored = await load(checkpoint);
+
+  expect(restored.stateId()).toBe(before);
+});
+```
+
+断言沉在观察上——「读回的状态和保存前一致」——而不是沉在 `checkpoint_snapshot` 这个名字上。
+名字换了就跟着搬，测试不会因此变红。反过来，如果一开始断言的是「`checkpoint_snapshot()` 被
+调用了一次」，这次合并就会变成几十个红灯，而没有任何行为变化。

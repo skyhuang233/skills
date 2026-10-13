@@ -32,7 +32,7 @@ npx skills@latest add skyhuang233/skills --skill '*' --agent codex --global --ye
 - `grilling` —— 一次只追问一个决策，并为每个决策推荐最小充分机制。
 - `to-plan` —— 维护并独立审核一份从概要展开到详细的活计划。
 - `implement` —— 实现一项已设计好的工作并提交到当前分支，内部走 `tdd` 与 `code-review`。
-- `tdd` —— 红绿循环的参考：好测试、seam、反模式与循环规则。
+- `tdd` —— 红绿循环的参考：好测试、契约、反模式与循环规则。
 - `code-review` —— 沿 Standards 与 Spec 两条轴并行审查改动。
 
 ## 推荐使用顺序
