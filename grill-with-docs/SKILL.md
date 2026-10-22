@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # 从概要到详细共创设计
 
-同时使用 `/grilling` 和 `$to-plan`：`/grilling` 负责一次只解决一个用户决策，`$to-plan` 负责
+同时使用 `/grilling` 和 `/to-plan`：`/grilling` 负责一次只解决一个用户决策，`/to-plan` 负责
 维护同一份活计划。计划在讨论中逐块成形，而不是在访谈结束后批量重建。
 
 把用户对一个完整设计块的确认视为该块已经达到 shared understanding：此时只更新设计文档。
