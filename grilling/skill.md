@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases. 就一份 plan、一个决策或一个想法持续追问用户，用于用户想压力测试自己的想法，或说出任何 'grill' 触发词时。
+description: 就一份 plan、一个决策或一个想法持续追问用户，用于用户想压力测试自己的想法，或说出任何 'grill' 触发词时。
 ---
 
 就这件事的每个方面持续追问，直到我们达成 shared understanding。沿着决策树的每条分支往下走，一次解决一个决策及其依赖关系。每个问题都给出你推荐的答案。
