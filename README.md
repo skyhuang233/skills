@@ -31,8 +31,7 @@ npx skills@latest add skyhuang233/skills --skill '*' --agent codex --global --ye
 - `grill-with-docs` —— 从概要到详细地讨论设计，并同步维护一份活计划。
 - `grilling` —— 一次只追问一个决策，并为每个决策推荐最小充分机制。
 - `to-plan` —— 维护并独立审核一份从概要展开到详细的活计划。
-- `implement` —— 实现一项已设计好的工作并提交到当前分支，内部走 `tdd` 与 `code-review`。
-- `tdd` —— 红绿循环的参考：好测试、契约、反模式与循环规则。
+- `implement` —— 注释先行地实现一项已设计好的工作并提交到当前分支，内部走 `code-review`。
 - `code-review` —— 沿 Standards 与 Spec 两条轴并行审查改动。
 
 ## 推荐使用顺序
@@ -42,5 +41,5 @@ npx skills@latest add skyhuang233/skills --skill '*' --agent codex --global --ye
 ```text
 块 1（设计）：grilling + grill-with-docs → to-plan → .scratch/<feature>/plan.md
 
-块 2（实施）：implement（内部走 tdd → code-review）
+块 2（实施）：implement（内部走 code-review）
 ```
